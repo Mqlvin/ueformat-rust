@@ -144,5 +144,9 @@ impl UEFileParser {
     pub fn get_pos(&self) -> u64 {
         self.cursor.position()
     }
+
+    pub fn override_size(&mut self, new_size: usize) {
+        self.size = new_size;
+    }
 }
 
