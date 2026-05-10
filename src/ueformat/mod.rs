@@ -148,16 +148,23 @@ fn ensure_magic_bytes(fp: &mut UEFileParser) -> Result<(), ParseError> {
 
 // returns lod level if true
 fn ensure_one_lod(fp: &mut UEFileParser) -> Result<i32, ParseError> {
-    let header_name = fp.read_fstring()?;
-    let array_size = fp.read_int()?;
-    let _lod_size = fp.read_int()?;
+    let _header_name = fp.read_fstring()?;
+    let _array_size = fp.read_int()?;
+    let _byte_size = fp.read_int()?;
 
-    let _class_data = fp.read_fstring()?;
-    let lod_level = fp.read_int()?;
 
-    if header_name.as_str() != LOD_HEADER_NAME || array_size != 1 {
-        Err(ParseError::MultipleLODs)
-    } else {
-        Ok(lod_level)
+    loop {
+        if fp.eof() {
+            return Err(ParseError::MultipleLODs);
+        }
+
+        let lod_name = fp.read_fstring()?;
+        let lod_size = fp.read_int()?;
+
+        if lod_name == "LOD2" { // look for lod2
+            return Ok(2);
+        }
+
+        fp.skip(lod_size as i64)?;
     }
 }
