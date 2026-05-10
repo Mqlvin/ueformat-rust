@@ -181,7 +181,13 @@ fn ensure_one_lod(fp: &mut UEFileParser) -> Result<(), ParseError> {
     if found_lods.is_empty() {
         return Err(ParseError::MultipleLODs());
     }
-    let lod = found_lods.last().unwrap();
+
+    if let Some((_, goto_idx)) = found_lods.iter().find(|lod| lod.0 == "LOD2") {
+        fp.goto(*goto_idx)?;
+        return Ok(());
+    }
+
+    let lod = found_lods.first().unwrap();
     fp.goto(lod.1)?;
-    return Ok(());
+    Ok(())
 }
