@@ -100,12 +100,10 @@ impl UEFileParser {
     }
 
     pub fn decompress_remaining_to_vec(&mut self) -> Result<Vec<u8>, ParseError> {
-        // Create a cursor over the remaining compressed bytes (zero-copy slice reference)
         let pos = self.cursor.position() as usize;
         let all = self.cursor.get_ref();
         let slice = &all[pos..];
 
-        // Wrap slice in a Cursor and a zstd Decoder, then read_to_end
         let cursor = Cursor::new(slice);
         let mut dec = Decoder::new(cursor)
             .map_err(|e| ParseError::CursorError(e)).unwrap();
@@ -129,12 +127,22 @@ impl UEFileParser {
         self.cursor.position() as usize >= self.size
     }
 
-    // optional: a skip helper like Python's seek relative
     pub fn skip(&mut self, offset: i64) -> Result<(), ParseError> {
         match self.cursor.seek(SeekFrom::Current(offset)) {
             Ok(_) => Ok(()),
             Err(cur_err) => Err(ParseError::CursorError(cur_err))
         }
+    }
+
+    pub fn goto(&mut self, pos: u64) -> Result<(), ParseError> {
+        match self.cursor.seek(SeekFrom::Start(pos)) {
+            Ok(_) => Ok(()),
+            Err(cur_err) => Err(ParseError::CursorError(cur_err))
+        }
+    }
+
+    pub fn get_pos(&self) -> u64 {
+        self.cursor.position()
     }
 }
 

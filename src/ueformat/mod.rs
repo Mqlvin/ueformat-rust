@@ -146,26 +146,34 @@ fn ensure_magic_bytes(fp: &mut UEFileParser) -> Result<(), ParseError> {
     }
 }
 
-// returns lod level if true
-fn ensure_one_lod(fp: &mut UEFileParser) -> Result<i32, ParseError> {
-    let _header_name = fp.read_fstring()?;
-    let _array_size = fp.read_int()?;
-    let _byte_size = fp.read_int()?;
+fn ensure_one_lod(fp: &mut UEFileParser) -> Result<(), ParseError> {
+    let mut header_name = String::new();
+    let mut _array_size = 0;
+    let mut byte_size = 0;
 
-    let mut found_lods = Vec::with_capacity(4);
+    while header_name != LOD_HEADER_NAME {
+        fp.skip(byte_size as i64)?;
+        header_name = fp.read_fstring()?;
+        _array_size = fp.read_int()?;
+        byte_size = fp.read_int()?;
+    }
+
+    // lod level, pos
+    let mut found_lods: Vec<(String, u64)> = Vec::with_capacity(4);
 
     loop {
         if fp.eof() {
-            return Err(ParseError::MultipleLODs(found_lods));
+            if found_lods.is_empty() {
+                return Err(ParseError::MultipleLODs());
+            }
+            let lod = found_lods.last().unwrap();
+            fp.goto(lod.1)?;
+            return Ok(());
         }
 
         let lod_name = fp.read_fstring()?;
         let lod_size = fp.read_int()?;
-        found_lods.push(lod_name.clone());
-
-        if lod_name == "LOD2" { // look for lod2
-            return Ok(2);
-        }
+        found_lods.push((lod_name, fp.get_pos()));
 
         fp.skip(lod_size as i64)?;
     }
