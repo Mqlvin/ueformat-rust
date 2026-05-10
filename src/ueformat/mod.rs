@@ -182,7 +182,6 @@ fn ensure_one_lod(fp: &mut UEFileParser) -> Result<(), ParseError> {
         return Err(ParseError::MultipleLODs());
     }
     let lod = found_lods.last().unwrap();
-    println!("Using lod: {} {}", lod.0, lod.1);
     fp.goto(lod.1)?;
     return Ok(());
 }
