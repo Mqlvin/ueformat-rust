@@ -182,11 +182,6 @@ fn ensure_one_lod(fp: &mut UEFileParser) -> Result<(), ParseError> {
         return Err(ParseError::MultipleLODs());
     }
 
-    if let Some((_, goto_idx)) = found_lods.iter().find(|lod| lod.0 == "LOD2") {
-        fp.goto(*goto_idx)?;
-        return Ok(());
-    }
-
     let lod = found_lods.first().unwrap();
     fp.goto(lod.1)?;
     Ok(())
