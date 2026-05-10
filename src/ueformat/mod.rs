@@ -152,14 +152,16 @@ fn ensure_one_lod(fp: &mut UEFileParser) -> Result<i32, ParseError> {
     let _array_size = fp.read_int()?;
     let _byte_size = fp.read_int()?;
 
+    let mut found_lods = Vec::with_capacity(4);
 
     loop {
         if fp.eof() {
-            return Err(ParseError::MultipleLODs);
+            return Err(ParseError::MultipleLODs(found_lods));
         }
 
         let lod_name = fp.read_fstring()?;
         let lod_size = fp.read_int()?;
+        found_lods.push(lod_name);
 
         if lod_name == "LOD2" { // look for lod2
             return Ok(2);

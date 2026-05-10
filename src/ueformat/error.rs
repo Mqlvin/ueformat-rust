@@ -15,8 +15,8 @@ pub enum ParseError {
     #[error("The UEMODEL was missing magic bytes")]
     NoMagicBytes,
 
-    #[error("The UEMODEL contained multiple LODs or LOD-level headers")]
-    MultipleLODs,
+    #[error("The UEMODEL contained multiple LODs or LOD-level headers: {0:?}")]
+    MultipleLODs(Vec<String>),
 
     #[error("No {0} found in mesh data")]
     MissingMeshData(String),
