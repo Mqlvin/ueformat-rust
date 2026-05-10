@@ -163,18 +163,26 @@ fn ensure_one_lod(fp: &mut UEFileParser) -> Result<(), ParseError> {
 
     loop {
         if fp.eof() {
-            if found_lods.is_empty() {
-                return Err(ParseError::MultipleLODs());
-            }
-            let lod = found_lods.last().unwrap();
-            fp.goto(lod.1)?;
-            return Ok(());
+            break;
         }
 
         let lod_name = fp.read_fstring()?;
         let lod_size = fp.read_int()?;
+
+        if !lod_name.starts_with("LOD") {
+            break;
+        }
+
         found_lods.push((lod_name, fp.get_pos()));
 
         fp.skip(lod_size as i64)?;
     }
+
+    if found_lods.is_empty() {
+        return Err(ParseError::MultipleLODs());
+    }
+    let lod = found_lods.last().unwrap();
+    println!("Using lod: {} {}", lod.0, lod.1);
+    fp.goto(lod.1)?;
+    return Ok(());
 }
