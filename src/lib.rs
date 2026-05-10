@@ -10,7 +10,7 @@ mod tests {
     // i suppose, its probably improper to use test stubs as a main function hehe
     #[test]
     fn main() {
-        let mut uemodel = open_uefile("./mapdata/LandscapeStreamingProxy_0AXZYDTCPDF5QKE8GYSIJCE8L_254_4_3_0.uemodel").unwrap();
+        let mut uemodel = open_uefile("./mapdata/S_WoodMines_WindowC_02.uemodel").unwrap();
         let (vertices, indices, normals) = get_vertices_indices_normals(&mut uemodel).unwrap();
 
         // we now have geometrical data about the file, which can be processed or saved using stl_io

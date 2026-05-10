@@ -185,12 +185,12 @@ fn ensure_one_lod(fp: &mut UEFileParser) -> Result<usize, ParseError> {
 
     if let Some((_, goto_idx, lod_size)) = found_lods.iter().find(|lod| lod.0 == "LOD2") {
         fp.goto(*goto_idx)?;
-        fp.override_size(*lod_size);
+        fp.override_size(*lod_size + (*goto_idx) as usize);
         return Ok(*lod_size);
     }
 
     let lod = found_lods.first().unwrap();
     fp.goto(lod.1)?;
-    fp.override_size(lod.2);
+    fp.override_size(lod.2 + (lod.1) as usize);
     Ok(lod.2)
 }
