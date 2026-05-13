@@ -2,8 +2,8 @@ use std::{fs::File, io::{BufReader, Read}};
 
 use crate::ueformat::{error::ParseError, parser::UEFileParser};
 
-mod error;
-mod parser;
+pub mod error;
+pub mod parser;
 
 const MAGIC: &str = "UEFORMAT";
 const COMPRESSION_METHOD: &str = "ZSTD";
